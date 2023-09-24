@@ -1,0 +1,122 @@
+[gd_scene load_steps=16 format=3 uid="uid://tujqrtlphmi"]
+
+[ext_resource type="Script" path="res://scripts/player.cs" id="1_kmcj6"]
+[ext_resource type="PackedScene" uid="uid://de52gojg8mdrr" path="res://art/GrapeBoi.glb" id="2_clq5k"]
+[ext_resource type="Texture2D" uid="uid://mnhrabkr0m0i" path="res://art/GrapeBoi_Face1.png" id="3_7r6pj"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_22q0b"]
+cull_mode = 1
+shading_mode = 0
+diffuse_mode = 3
+specular_mode = 2
+albedo_color = Color(0, 0, 0, 1)
+grow = true
+grow_amount = 0.03
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_kytaf"]
+next_pass = SubResource("StandardMaterial3D_22q0b")
+diffuse_mode = 3
+specular_mode = 1
+albedo_color = Color(0.215686, 0, 0.607843, 1)
+roughness = 0.0
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_fqix3"]
+transparency = 1
+shading_mode = 0
+diffuse_mode = 3
+specular_mode = 2
+albedo_color = Color(0, 0, 0, 1)
+albedo_texture = ExtResource("3_7r6pj")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ejidm"]
+shading_mode = 0
+diffuse_mode = 3
+specular_mode = 2
+albedo_color = Color(0, 0, 0, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_c8r8v"]
+shading_mode = 0
+diffuse_mode = 3
+specular_mode = 2
+albedo_color = Color(0, 0, 0, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_6fnaj"]
+cull_mode = 1
+shading_mode = 0
+diffuse_mode = 3
+specular_mode = 2
+albedo_color = Color(0, 0, 0, 1)
+grow = true
+grow_amount = 0.03
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_m585r"]
+next_pass = SubResource("StandardMaterial3D_6fnaj")
+diffuse_mode = 3
+specular_mode = 2
+albedo_color = Color(0, 0.607843, 0, 1)
+roughness = 0.0
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_5mnqp"]
+radius = 0.25
+height = 0.9
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_wsn0q"]
+animation = &"Idle"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_uenl3"]
+animation = &"Run"
+
+[sub_resource type="AnimationNodeBlendSpace1D" id="AnimationNodeBlendSpace1D_o6v15"]
+blend_point_0/node = SubResource("AnimationNodeAnimation_wsn0q")
+blend_point_0/pos = 0.0
+blend_point_1/node = SubResource("AnimationNodeAnimation_uenl3")
+blend_point_1/pos = 1.0
+min_space = 0.0
+
+[sub_resource type="AnimationNodeBlendTree" id="AnimationNodeBlendTree_m1cmd"]
+graph_offset = Vector2(-535.041, 28.2314)
+nodes/BlendSpace1D/node = SubResource("AnimationNodeBlendSpace1D_o6v15")
+nodes/BlendSpace1D/position = Vector2(60, 80)
+nodes/output/position = Vector2(320, 140)
+node_connections = [&"output", 0, &"BlendSpace1D"]
+
+[node name="Player" type="CharacterBody3D"]
+script = ExtResource("1_kmcj6")
+
+[node name="Pivot" type="Node3D" parent="."]
+
+[node name="GrapeBoi" parent="Pivot" instance=ExtResource("2_clq5k")]
+
+[node name="Skeleton3D" parent="Pivot/GrapeBoi/Armature" index="0"]
+bones/4/rotation = Quaternion(-7.64907e-10, -7.50711e-11, -0.017469, 0.999847)
+bones/6/rotation = Quaternion(-0.707066, 0.707066, -0.00758927, 0.00758996)
+bones/7/rotation = Quaternion(-0.0198797, 4.04005e-07, -4.46279e-07, 0.999802)
+bones/9/rotation = Quaternion(-7.64907e-10, -7.50747e-11, -0.017469, 0.999847)
+
+[node name="Body" parent="Pivot/GrapeBoi/Armature/Skeleton3D" index="0"]
+surface_material_override/0 = SubResource("StandardMaterial3D_kytaf")
+surface_material_override/1 = SubResource("StandardMaterial3D_fqix3")
+surface_material_override/2 = SubResource("StandardMaterial3D_ejidm")
+surface_material_override/3 = SubResource("StandardMaterial3D_c8r8v")
+
+[node name="Stem" parent="Pivot/GrapeBoi/Armature/Skeleton3D" index="1"]
+surface_material_override/0 = SubResource("StandardMaterial3D_m585r")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.45, 0)
+shape = SubResource("CapsuleShape3D_5mnqp")
+
+[node name="SpringArmPivot" type="Node3D" parent="."]
+
+[node name="SpringArm3D" type="SpringArm3D" parent="SpringArmPivot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 0.2)
+spring_length = 2.5
+
+[node name="Camera3D" type="Camera3D" parent="SpringArmPivot/SpringArm3D"]
+
+[node name="AnimationTree" type="AnimationTree" parent="."]
+tree_root = SubResource("AnimationNodeBlendTree_m1cmd")
+anim_player = NodePath("../Pivot/GrapeBoi/AnimationPlayer")
+parameters/BlendSpace1D/blend_position = 0.0
+
+[editable path="Pivot/GrapeBoi"]
